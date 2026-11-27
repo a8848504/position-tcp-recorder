@@ -155,3 +155,23 @@ func testDownload(base string, payload []byte) (*GitHub, *Release) {
 	}
 	return client, release
 }
+
+func TestRejectInvalidReleaseMetadata(t *testing.T) {
+	for _, test := range []struct{ name, body string }{
+		{"missing digest", `{"tag_name":"v1.5.0","assets":[{"id":1,"name":"PositionTCP-Windows-amd64-1.5.0.exe","size":10}]}`},
+		{"wrong architecture", `{"tag_name":"v1.5.0","assets":[{"id":1,"name":"PositionTCP-Windows-arm64-1.5.0.exe","size":10,"digest":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}]}`},
+		{"prerelease", `{"tag_name":"v1.5.0","prerelease":true}`},
+		{"invalid version", `{"tag_name":"v1.5.0-rc1"}`},
+		{"draft", `{"tag_name":"v1.5.0","draft":true}`},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, test.body) }))
+			defer server.Close()
+			api := NewGitHub("demo/analyzer")
+			api.apiBase = server.URL
+			if release, err := api.Latest(context.Background(), "1.4.0", "amd64"); err == nil || release != nil {
+				t.Fatal("unusable update accepted", release, err)
+			}
+		})
+	}
+}
