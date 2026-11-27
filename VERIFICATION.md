@@ -1,6 +1,6 @@
 # Verification
 
-## 1.4.0
+## 1.4.1
 
 Automated checks cover TCP reassembly, binary payload preservation, multiple connections, CRC/event validation, cancellation, pause/resume timeline at original and double speed, no reconnect on pause, stop while paused, update version comparison, download progress, fallback, cancellation and SHA-256 failure.
 

@@ -19,11 +19,11 @@ VERSION = re.search(r'const Current = "([0-9.]+)"', (ROOT / "internal/version/ve
 WIRESHARK = "4.6.9"
 ARTIFACTS = {
     f"WiresharkPortable64_{WIRESHARK}.paf.exe": (
-        f"https://2.na.dl.wireshark.org/win64/WiresharkPortable64_{WIRESHARK}.paf.exe",
+        f"https://2.na.dl.wireshark.org/win64/all-versions/WiresharkPortable64_{WIRESHARK}.paf.exe",
         "71bcfda9eefec8088faaf0b8e6d026369ea83ae6149cd0b76ccf0b3194240db0",
     ),
     f"wireshark-{WIRESHARK}.tar.xz": (
-        f"https://2.na.dl.wireshark.org/src/wireshark-{WIRESHARK}.tar.xz",
+        f"https://2.na.dl.wireshark.org/src/all-versions/wireshark-{WIRESHARK}.tar.xz",
         "d062d416a1ab3a49975aafe3a671c882dde0562ccd71b078808ceb59d465fc0f",
     ),
     "etl2pcapng.exe": (
