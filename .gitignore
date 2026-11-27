@@ -1,0 +1,11 @@
+/build/
+/dist/
+/internal/bundle/assets/wireshark-runtime.zip
+/cmd/tcp-recorder/*.syso
+
+*.pcap
+*.pcapng
+*.etl
+*.tcr
+.DS_Store
+__pycache__/
