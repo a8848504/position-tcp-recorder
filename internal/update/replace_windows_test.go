@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -31,7 +32,7 @@ func TestMain(m *testing.M) {
 		case "--cleanup-helper":
 			exe, _ := os.Executable()
 			data, _ := os.ReadFile(exe)
-			os.WriteFile(os.Getenv("POSITION_TCP_UPDATE_RECEIPT"), []byte(fmt.Sprintf("%x", sha256.Sum256(data))), 0600)
+			os.WriteFile(os.Getenv("POSITION_TCP_UPDATE_RECEIPT"), []byte(fmt.Sprintf("%x %d", sha256.Sum256(data), os.Getpid())), 0600)
 			CleanHelper(os.Args[2])
 			os.Exit(0)
 		}
@@ -71,8 +72,16 @@ func TestWindowsReplacementAndRestart(t *testing.T) {
 	for {
 		got, err := os.ReadFile(receipt)
 		if err == nil {
-			if strings.TrimSpace(string(got)) != digest {
+			fields := strings.Fields(string(got))
+			if len(fields) != 2 || fields[0] != digest {
 				t.Fatalf("replacement failed: %s", got)
+			}
+			pid, err := strconv.ParseUint(fields[1], 10, 32)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := waitForExit(uint32(pid)); err != nil {
+				t.Fatal(err)
 			}
 			break
 		}
