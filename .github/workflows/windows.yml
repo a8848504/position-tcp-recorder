@@ -56,6 +56,12 @@ jobs:
           if ($env:VERSION -ne "v$declared") { throw 'Tag differs from source version' }
           python scripts/package.py --sevenzip 'C:\Program Files\7-Zip\7z.exe'
           if ($LASTEXITCODE -ne 0) { throw 'Packaging failed' }
+      - name: Verify PCAP to live TCP with bundled tshark
+        shell: pwsh
+        run: |
+          $env:POSITION_TCP_TSHARK = Join-Path $PWD 'build/cache/wireshark-windows/App/Wireshark/tshark.exe'
+          go test -v -count=1 ./internal/recording -run '^TestTsharkPCAPToLiveTCP$'
+          if ($LASTEXITCODE -ne 0) { throw 'Bundled tshark replay integration failed' }
       - name: Publish release
         shell: pwsh
         env:
